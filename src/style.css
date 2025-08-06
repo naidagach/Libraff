@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-display: swap;
+  src: url("../src/fonts/Nunito-Regular.ttf") format("woff");
+}
+*{
+  font-family: 'Nunito';
+}
+
+@theme {
+
+  --breakpoint-4xs: 363px;
+  --breakpoint-3xs: 534px;
+  --breakpoint-2xs: 577px;
+  --breakpoint-xs: 677px;
+  --breakpoint-s: 768px;
+  --breakpoint-sm: 896px;
+  --breakpoint-m: 1024px;
+  --breakpoint-l: 1150px;
+  --breakpoint-xl: 1350px;
+  --color-text: #0f172a;
+  --color-red: #ef3340;
+  --shadow-custom
+  : rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px
+}
+
+.swiper-pagination-bullet {
+  background: #cad1dc !important;
+  transition: all 0.3s ease;
+  opacity: 1 !important;
+}
+.swiper-pagination-bullet-active {
+  width: 30px !important;
+  border-radius: 5px !important;
+  background: #9eacbf !important;
+}
+
+.itemHeart:hover .itemDiv{
+    display: block
+}
