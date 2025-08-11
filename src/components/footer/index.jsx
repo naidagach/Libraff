@@ -23,10 +23,11 @@ function Footer() {
 	  ];
 	  
 	return (
-		<div className='bg-[#f9fafc] px-6 border-t border-[#eee] mx-auto '>
+		<div className='bg-[#f9fafc] px-6 border-t border-[#eee] '>
+			<div className='max-w-[1240px] mx-auto'>
 			<div className='font-[900] pt-[15px] pb-[10px] mx-auto '>
 				{footerData.map((item, i) => (
-					<ul className='s:hidden'>
+					<ul key={i} className='s:hidden'>
 						<li onClick={() => setOpenDrop(openDrop === i ? null : i)} key={i} className={`h-[50px] flex justify-between items-center
 							${openDrop == i ? 'border-0' : 'border-b'} border-[#eee]`}> {item.title}
 							{openDrop == i ? <FaMinus className='text-[20px] text-[#a7abb3] '/> : <FaPlus className='text-[20px]'/>}
@@ -42,7 +43,7 @@ function Footer() {
 				))}
 				<ul className='hidden s:flex justify-between px-8'>
 				{footerData.map((item, i) => (
-					<li className='text-text text-[18px] font-extralight '>{item.title}
+					<li key={i} className='text-text text-[18px] font-extralight '>{item.title}
 						<ul className='text-[14px] pb-2 font-extralight text-[#363535] max-w-[150px] l:max-w-[300px] py-2'>
 							{item.items.map((li, j) => (
 								<li className='py-1' key={j}><a>{li}</a></li>
@@ -53,6 +54,7 @@ function Footer() {
 				</ul>
 			</div>
 			<p className='text-[#1e1e1e] font-extralight text-[14px] py-[10px]'>© 2017 - {new Date().getFullYear()} Libraff.</p>
+			</div>
 		</div>
 	)
 }

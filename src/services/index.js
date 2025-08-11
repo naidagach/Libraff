@@ -44,3 +44,12 @@ export async function get3Alma() {
         return error
     }
 }
+
+export async function getBookById(id) {
+    try {
+        const res = await instance.get(`/getBookById?id=${id}`)
+        return res.data
+    } catch (error) {
+        return error
+    }
+}

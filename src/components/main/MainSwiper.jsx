@@ -9,7 +9,7 @@ function MainSwiper() {
 
     return (
         <div>
-            <div className='p-4 flex justify-between'>
+            <div className='p-4 flex justify-between max-w-[1240px] mx-auto'>
                 <ul className='flex gap-4 text-[15px] font-bold'>
                     <li>Bestseller – İyun</li>
                     <li>Endirimlər</li>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { get3Alma } from '../../services'
+import { Link } from 'react-router'
 
 function SectionAlma() {
 
@@ -32,7 +33,8 @@ function SectionAlma() {
     return (
         <div className='mx-[15px] flex flex-col gap-4 xs:grid xs:grid-cols-2 xs:grid-rows-3 m:grid-cols-3 m:grid-rows-2'>
             {books.map((item, i) => (
-                <div key={i} className={`rounded-2xl overflow-hidden xs:size-full
+                <Link key={i} to={`/kitab/${encodeURIComponent(item.title)}/${item.id}`}
+                className={`rounded-2xl overflow-hidden xs:size-full
                     ${
                     i === 0 ? 'bg-[#f8fafc] xs:col-span-1 xs:row-span-1': 
                     i === 1 ? 'bg-[#fef2f2] xs:col-span-1 xs:row-start-2 xs:row-span-1': 
@@ -50,7 +52,7 @@ function SectionAlma() {
                         <img className={`${i === 3 ? 'w-[200px]' : ''} w-[150px]`} src={item.imageSource} alt={item.title} />
                         </div>
                     </div>
-                </div>
+                </Link>
             ))}
         </div>
 

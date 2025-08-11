@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import { TbLayoutGrid } from "react-icons/tb";
 import { FaChevronDown, FaChevronUp, FaMagnifyingGlass, FaXmark } from "react-icons/fa6";
-import { FaChevronCircleUp, FaRegHeart, FaRegUserCircle} from "react-icons/fa";
+import { FaRegHeart, FaRegUserCircle} from "react-icons/fa";
 import { RiShoppingBag4Line } from "react-icons/ri";
 import { GoTriangleRight, GoTriangleUp } from "react-icons/go";
-import MainSwiper from '../main/MainSwiper';
 import CatalogModal from './CatalogModal';
+import logo from '../../assets/logo-libraff.png';
 
 
 function Header() {
@@ -16,14 +16,14 @@ function Header() {
 
     return (
         <div className="hidden s:block">
-            <div className='px-4 flex justify-between items-center'>
+            <div className='px-4 flex justify-between items-center max-w-[1240px] mx-auto'>
                 <div className='py-10'>
                     <a href="/">
-                        <img className='w-[175px]' src="src/assets/logo-libraff.png" alt="LibraffLogo" />
+                        <img className='w-[175px]' src={logo} alt="LibraffLogo" />
                     </a>
                 </div>
                 <div className='flex gap-4 justify-between'>
-                    <div className='flex gap-4 xl:mx-20'>
+                    <div className='flex gap-4 '>
                         <div onClick={() => setOpenCat(!openCat)} className='bg-red hover:bg-[#ef1522] cursor-pointer px-[15px] py-[10px] rounded-[22px] flex gap-2 l:px-6 z-[999]'>
                             {!openCat ? 
                             <TbLayoutGrid className='w-[24px] h-[24px] text-white' /> : <FaXmark className="w-[24px] h-[24px] text-white" /> }
@@ -103,7 +103,7 @@ function Header() {
                             <RiShoppingBag4Line onClick={() => setOpenShop(!openShop)} className='text-[27px] cursor-pointer' />
                             <div className={`bg-white absolute z-[999] top-[100%] right-0 w-[350px] rounded-2xl shadow-custom overflow-hidden origin-top-right transition-all duration-300 ease-in-out
                                     ${openShop ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-95 opacity-0 pointer-events-none'}`}>
-                                        <div className="">
+                                        <div>
                                             <div className="flex justify-between items-center text-lg font-semibold border-b py-2 px-4 ">
                                                 <p className='text-[14px] text-text font-bold '>Səbətdəki məhsullar:</p>
                                                 <div className="cursor-pointer text-gray-500 hover:text-black">
@@ -116,12 +116,11 @@ function Header() {
                                                 <button className='text-text rounded-3xl border-2 border-red px-[15px] mx-4 py-2 my-4 w-[90%] '>Səbət</button>
                                             </div>
                                         </div>    
-                          </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <MainSwiper />
         </div>
     )
 }
