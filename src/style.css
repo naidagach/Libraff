@@ -43,3 +43,26 @@
 .itemHeart:hover .itemDiv{
     display: block
 }
+
+input {
+  outline: none;
+  transition: border 0.2s;
+}
+input:focus {
+  border-color: red !important;
+}
+
+/* Убираем стрелки у number */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield; /* для Firefox */
+}
+
+button {
+  cursor: pointer;
+}

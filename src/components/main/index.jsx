@@ -47,7 +47,7 @@ function Main() {
                         <Item count={count} type='teasPress' />
                     </div>
                     <div className='text-center'>
-                        <button onClick={() => {console.log( )}} className='text-text rounded-3xl border-2 cursor-pointer border-red px-[15px] py-2 my-4'>Daha çox göstər</button>
+                        <button  className='text-text rounded-3xl border-2 cursor-pointer border-red px-[15px] py-2 my-4'>Daha çox göstər</button>
                     </div>
                 </section>
                 <section className='py-[30px]'>

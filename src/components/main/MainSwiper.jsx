@@ -9,20 +9,6 @@ function MainSwiper() {
 
     return (
         <div>
-            <div className='p-4 flex justify-between max-w-[1240px] mx-auto'>
-                <ul className='flex gap-4 text-[15px] font-bold'>
-                    <li>Bestseller – İyun</li>
-                    <li>Endirimlər</li>
-                    <li>Müəlliflər</li>
-                    <li>Klassiklər</li>
-                </ul>
-                <ul className='flex gap-4 text-[15px] text-[#334155] font-extralight'>
-                    <li>Ödəniş və çatdırılma</li>
-                    <li>Loyallıq Kartı</li>
-                    <li>FAQ</li>
-                    <li>Əlaqə</li>
-                </ul>
-            </div>
             <div>
                 <Swiper
                     pagination={{

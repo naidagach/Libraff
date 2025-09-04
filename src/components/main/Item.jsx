@@ -1,12 +1,27 @@
 import React, { useEffect, useState } from 'react'
-import { getBestsellers, getMostSearched, getWeekMostViewed } from '../../services'
+import { getBestsellers, getBooksByCategoryCode, getMostSearched, getWeekMostViewed } from '../../services'
 import ItemSkeleton from './ItemSkeleton'
-import { FaRegHeart } from 'react-icons/fa6'
+import { FaRegHeart, FaXmark } from 'react-icons/fa6'
 import { Link } from 'react-router'
+import { useWishList } from '../../context/wishListContext'
 
-function Item({activeLang, type='bestseller', count, book}) {
+function Item({activeLang, type='bestseller', count, book, code}) {
 
 	const [books, setBooks] = useState([])
+	const [activeLike, setActiveLike] = useState(false)
+	const [clicked, setClicked] = useState(null)
+	const {wishList, addLike} = useWishList()
+
+
+	function handleLikes(e, item) {
+		e.preventDefault()
+		e.stopPropagation()
+		addLike(item)
+		setActiveLike(true)
+		setClicked({...item, count})
+		setTimeout(() => setActiveLike(false), 6000)
+		console.log(count);
+	}
 
 	useEffect(() => {
 		if (type === 'bestseller') {
@@ -35,9 +50,18 @@ function Item({activeLang, type='bestseller', count, book}) {
 				setBooks(complectBooks)
 			})
 		} else if (type === 'recent') {
-			// const recentBooks = JSON.parse(localStorage.getItem('viewedBooks') || [])
+			setBooks(() => {
+				try {
+					const data = JSON.parse(localStorage.getItem('viewedBooks'))
+					return Array.isArray(data) ? data : []
+				} catch {
+					return []
+				}
+			})
+		} else if (type === 'category') {
+			getBooksByCategoryCode(code, 1, 16).then(info => setBooks(info.books))
 		}
-	}, [])
+	}, [code])
 
 	const lang = {
 		'Azərbaycan': 'AZE',
@@ -45,48 +69,63 @@ function Item({activeLang, type='bestseller', count, book}) {
 		'Türkcə': 'TUR'
 	}
 	const filterLang = activeLang ? books.filter(item => item.language === lang[activeLang]) : books
-	if (books.length === 0 ) {
-		return (
-			<div className='flex flex-wrap w-full gap-2'>
-				<div className='w-[48%] 3xs:w-[32%] 2xs:w-[49%] xs:w-[30%] sm:w-[24%] l:w-[19%]'>
-					<ItemSkeleton />
+	if (books.length === 0) {
+		if (type !== "category") {
+		  return (
+			<div className="flex flex-wrap w-full gap-2">
+			  {Array.from({ length: 5 }).map((_, i) => (
+				<div key={i} className="w-[48%] sm:w-[24%]">
+				  <ItemSkeleton />
 				</div>
-				<div className='w-[48%] 3xs:w-[32%] 2xs:w-[49%] xs:w-[30%] sm:w-[24%] l:w-[19%]'>
-					<ItemSkeleton />
-				</div>
-				<div className='w-[48%] 3xs:w-[32%] 2xs:w-[49%] xs:w-[30%] sm:w-[24%] l:w-[19%]'>
-					<ItemSkeleton />
-				</div>
-				<div className='w-[48%] 3xs:w-[32%] 2xs:w-[49%] xs:w-[30%] sm:w-[24%] l:w-[19%]'>
-					<ItemSkeleton />
-				</div>
-				<div className='w-[48%] 3xs:w-[32%] 2xs:w-[49%] xs:w-[30%] sm:w-[24%] l:w-[19%]'>
-					<ItemSkeleton />
-				</div>
-				<div className='w-[48%] 3xs:w-[32%] 2xs:w-[49%] xs:w-[30%] sm:w-[24%] l:w-[19%]'>
-					<ItemSkeleton />
-				</div>
+			  ))}
 			</div>
+		  )
+		}
+		return (
+				<p className="text-center text-gray-400 py-[60px] px-[20px] m:px-[200px]">
+					Bu kateqoriyada məhsul mövcud deyil.
+				</p>
 		)
-	}
+	  }
 	return (
-			<div className='flex gap-2 flex-wrap w-full'>
-				{
-					filterLang.length === 0 ? (
-						<p className="text-center text-gray-500">Kitab tapılmadı.</p>
-					) :
-					(filterLang.map((item, i) => {
-						return (
-							<Link key={i} to={`/kitab/${encodeURIComponent(item.title)}/${item.id}`}
-								className='relative group 4xs:w-[48%] 3xs:w-[32%] 2xs:w-[49%] xs:w-[30%] sm:w-[24%] l:w-[19%] h-[485px] flex flex-col justify-evenly p-2 rounded-2xl overflow-hidden hover:shadow-custom'>
-								<div className='itemHeart absolute top-6 right-6 text-xl text-gray-500 hover:text-red hidden group-hover:block'>
-									<FaRegHeart className='group' />
-									<div className='itemDiv hidden'> 
-										<div>
-											<img className='w-[20px] absolute top-[100%] right-[75px]' alt="" />
+		<div className='flex gap-2 flex-wrap w-full'>
+			{
+				(filterLang.map((item, i) => {
+					return (
+						<Link key={i} to={`/kitab/${encodeURIComponent(item.title)}/${item.id}`}
+							className={`relative group 4xs:w-[48%] 3xs:w-[32%] 2xs:w-[49%]
+								${type === 'category' ? 's:w-[49%] sm:w-[30%] l:w-[24%]' : 'sm:w-[24%] l:w-[19%]'} 
+								xs:w-[30%] h-[485px] flex flex-col justify-evenly p-2 rounded-2xl overflow-hidden hover:shadow-custom`}>
+								<div className='itemHeart absolute top-6 right-6 text-xl text-gray-500 '>
+									<FaRegHeart onClick={e => handleLikes(e, item)} className={`hover:text-red ${wishList.find(el => el.id === item.id) ? 'text-red': 'group-hover:block hidden'} `} />
+									{activeLike && clicked &&
+									<div className='bg-[#0000000f] inset-0 z-[999] fixed  flex items-center justify-center w-screen'>
+										<div onClick={e => e.preventDefault()} className='max-s:fixed z-[999] max-s:bottom-0 s:inset-0 s:w-[500px] mx-auto  s:rounded-2xl s:overflow-hidden left-0 right-0 bg-white'>
+											<div className='flex justify-between items-center px-[15px] py-[10px] border-b border-[#eee]'>
+												<h1 className='text-[22px] text-text'>Məhsul seçilmişlər siyahısına əlavə edildi</h1>
+												<FaXmark onClick={() => setActiveLike(!activeLike)} className='cursor-pointer text-[22px]' />
+											</div>
+											<div className='s:flex s:justify-between p-4' key={clicked.id}>
+												<img className='w-[80px] py-2 max-s:mx-auto' src={clicked.imageSource} alt={clicked.title} />
+												<div className='s:w-[50%] flex justify-between items-center text-[14px] mb-[15px] px-[15px] py-[10px]'>
+													<p className='text-red'>{clicked.title}</p>
+													<p>{clicked?.count} x {clicked.price}₼</p>
+												</div>
+											</div>
+											<div className='max-s:h-[200px] py-2 bg-[#f6f6f8] flex justify-center items-center '>
+												<Link to={'/wish-list'}>
+													<button className='rounded-3xl border border-text s:bg-[#000] px-[15px] py-2 text-text s:text-white text-[16px]'>Seçilmiş məhsulların siyahısına baxın</button>
+												</Link>
+											</div>
 										</div>
-										<div className='bg-[#000000c9] text-white text-[14px] absolute right-0 p-2 m-2 top-[100%] w-[150px] rounded-md'>
-											<p>Seçilən məhsulların siyahısına əlave edin</p>
+									</div>
+									}
+									<div className='itemDiv hidden'> 
+										<div className='bg-[#000000c9] text-white text-[14px] absolute right-0 p-2 m-2 top-[100%] w-[180px] rounded-md'>
+											{ wishList.find(el => el.id === item.id) ? 
+												<p>Məhsul artıq seçilmişlər siyahısına elavə edildi</p> :
+												<p>Seçilən məhsulların siyahısına əlave edin</p>
+											}
 										</div>
 									</div>
 								</div>
@@ -94,7 +133,7 @@ function Item({activeLang, type='bestseller', count, book}) {
 									<img className=' mx-auto' src={item.imageSource} alt={item.title} />
 								</div>
 								<div className='flex flex-col gap-3'>
-									<p>{item.title.slice(0, 200)}</p>
+									<p>{item.title.slice(0, 40)}</p>
 									<div className='flex items-center'>
 										<p className='text-[18px] pr-2 font-bold'>{item.price}₼</p>
 											{item.discountedPrice &&
@@ -105,11 +144,11 @@ function Item({activeLang, type='bestseller', count, book}) {
 											}
 									</div>
 								</div>
-							</Link>
-						)
-					}))
-				}
-			</div>
+						</Link>
+					)
+				}))
+			}
+		</div>
 	)
 }
 

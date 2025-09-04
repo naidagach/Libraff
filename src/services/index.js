@@ -53,3 +53,12 @@ export async function getBookById(id) {
         return error
     }
 }
+
+export async function getBooksByCategoryCode(code, pageNumber, pageCount) {
+    try {
+        const res = await instance.get(`/getBooksByCategoryCode?code=${code}&pageNumber=${pageNumber}&pageCount=${pageCount}`)
+        return res.data
+    } catch (error) {
+        return error
+    }
+}

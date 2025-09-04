@@ -1,35 +1,52 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router'
+import { Link, useParams } from 'react-router'
 import { getBookById } from '../services'
 import { FiCopy } from "react-icons/fi"
 import { RiShoppingBag4Line } from 'react-icons/ri'
-import { FaRegHeart, FaXmark } from 'react-icons/fa6'
+import { FaHeart, FaRegHeart, FaXmark } from 'react-icons/fa6'
 import { MdOutlineAnnouncement } from "react-icons/md"
 import { FaStoreAlt } from "react-icons/fa";
 import { TbTruckDelivery } from "react-icons/tb";
 import toast, { Toaster } from 'react-hot-toast'
 import Item from '../components/main/Item'
+import { useWishList } from '../context/wishListContext'
+import { useBasket } from '../context/BasketContext'
 
 
 function Detail() {
     const [book, setBook] = useState({})
+	const [activeItem, setActiveItem] = useState(false)
     const {id, name} = useParams()
 	const [activeDiv, setActiveDiv] = useState("desc")
-
+	const {wishList, addLike} = useWishList()
+	const {basket, addToBasket} = useBasket()
+	
 	useEffect(() => {
 		getBookById(id).then(info => setBook(info))
-
-		// if (book && book.id) {
-		// 	const recentBooks = JSON.parse(localStorage.getItem('viewedBooks') || [])
-		// 	const updated = [
-		// 		book,
-		// 		...recentBooks.filter(b => b.id !== book.id)
-		// 	  ]
-		// 	  localStorage.setItem('viewedBooks', JSON.stringify(updated.slice(0, 10)))
-		// }
 	}, [id, name])
 
+	useEffect(() => {
+		if (book && book.id) {
+			let recentBooks = []
+        try {
+            recentBooks = JSON.parse(localStorage.getItem('viewedBooks') || '[]')
+            if (!Array.isArray(recentBooks)) {
+                recentBooks = []
+            }
+        } catch {
+            recentBooks = []
+        }
+		const updated = [book, ...recentBooks.filter(b => b.id !== book.id)]
+		localStorage.setItem('viewedBooks', JSON.stringify(updated.slice(0, 12)))
 
+		}
+	}, [book])
+
+	function handleBasket(item) {
+		addToBasket(item)
+		setActiveItem(true)
+		setTimeout(() => setActiveItem(false), 6000)
+	}
 	function handleToast() {
 		navigator.clipboard.writeText(book?.uniqueCode || '')
 
@@ -55,14 +72,20 @@ function Detail() {
     <div>
 		<Toaster position="top-right" reverseOrder={false} />
 		<div className="px-4 pb-[30px] border-b border-[#bdc3c7] max-w-[1240px] mx-auto">
-			<div className='scrollx py-[5px] mb-[15px] text-[#767676] text-[14px] flex overflow-x-scroll gap-2'>
-				<a className='whitespace-nowrap cursor-pointer hover:text-red' href='/'>Əsas səhifə /</a>
-				<p className='whitespace-nowrap cursor-pointer hover:text-red'>{book?.firstCategory?.categoryName} /</p>
-				<p className='whitespace-nowrap cursor-pointer hover:text-red'>{book?.secondCategory?.categoryName} /</p>
-				<p className='whitespace-nowrap cursor-pointer hover:text-red'>{book?.thirdCategory?.categoryName} /</p>
-				<p className='whitespace-nowrap text-[#9c9c9c]'>{book?.title}</p>
+			<div className='scrollx pt-[15px] mb-[15px] text-[#767676] text-[14px] flex overflow-x-scroll gap-2'>
+				<a className='whitespace-nowrap cursor-pointer hover:text-red' href='/'>Əsas səhifə </a>
+				<Link to={`/catalog/${book?.firstCategory?.categoryCode}`} className='whitespace-nowrap cursor-pointer hover:text-red'>
+					/ {book?.firstCategory?.categoryName}
+				</Link>
+				<Link to={`/catalog/${book?.firstCategory?.categoryCode}/${book?.secondCategory?.categoryCode}`} className='whitespace-nowrap cursor-pointer hover:text-red'>
+					/ {book?.secondCategory?.categoryName}
+				</Link>
+				<Link to={`/catalog/${book?.firstCategory?.categoryCode}/${book?.secondCategory?.categoryCode}/${book?.thirdCategory?.categoryCode}`} className='whitespace-nowrap cursor-pointer hover:text-red'>
+					/ {book?.thirdCategory?.categoryName}
+				</Link>
+				<p className='whitespace-nowrap text-[#9c9c9c]'>/ {book?.title}</p>
 			</div>
-			<div className=' flex flex-col gap-4 s:flex-row s:items-start'>
+			<div className='flex flex-col gap-4 s:flex-row s:items-start'>
 				<div className='bg-[#f6f6f8] overflow-hidden s:w-[55%] rounded-2xl w-full grid place-items-center'>
 					<img className='max-2xs:w-[80%] 2xs:max-h-[560px] mx-auto' src={book?.imageSource} alt={book?.title} />
 				</div>
@@ -83,23 +106,52 @@ function Detail() {
 							<p className='bg-red text-white px-1.5 py-0.5 rounded-md text-[12px]'>{book?.discountPercentage}%</p>
 						</div>
 					</div>
-					<div>
-						<button className='bg-red w-full px-8 py-3 text-white flex items-center justify-center gap-2 text-[18px] rounded-4xl'>
+					<div onClick={() => handleBasket(book)} className='relative'>
+						<button className='bg-red cursor-pointer w-full px-8 py-3 text-white flex items-center justify-center gap-2 text-[18px] rounded-4xl'>
 							<RiShoppingBag4Line className='text-[24px]' />Səbətə əlavə et
 						</button>
-					</div>
-					<div className='flex justify-between items-center'>
-						<div className='itemHeart relative flex items-center text-[#767676] gap-1 cursor-pointer hover:text-red'>
-							<FaRegHeart className='text-[24px]' />
-							<p className='text-[14px] font-extralight '>Seçilmiş</p>
-							<div className='itemDiv absolute'> 
-								<div>
-									<img className='w-[20px] absolute top-[100%] right-[20px]' alt="" />
-								</div>
-								<div className='bg-[#000000c9] text-white text-[14px] absolute right-0 p-2 m-2 top-[100%] w-[150px] rounded-md'>
-									<p>Seçilən məhsulların siyahısına əlave edin</p>
+						{basket.some(elem => elem.id === book.id) ? (
+							<div className='absolute bg-[#374151] border border-white shadow-2xs top-0 right-0 rounded-full'>
+								<svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#e3e3e3"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>
+							</div>
+						) : ''}
+						{activeItem && (
+							<div className='bg-[#00000080] inset-0 z-[999] fixed  flex items-center justify-center w-screen'>
+								<div onClick={e => e.preventDefault()} className='max-s:fixed z-[999] max-s:bottom-0 s:inset-0 s:w-[500px] mx-auto  s:rounded-2xl s:overflow-hidden left-0 right-0 bg-white'>
+									<div className='flex justify-between items-center px-[15px] py-[10px] border-b border-[#eee]'>
+										<h1 className='text-[22px] text-text'>Məhsul səbətə əlavə edilmişdir</h1>
+										<FaXmark onClick={() => setActiveItem(!activeItem)} className='cursor-pointer text-[22px]' />
+									</div>
+									<div className='s:flex s:justify-between p-4' key={book.id}>
+										<img className='w-[80px] py-2 max-s:mx-auto' src={book.imageSource} alt={book.title} />
+										<div className='s:w-[50%] flex justify-between items-center text-[14px] mb-[15px] px-[15px] py-[10px]'>
+											<p className='text-red'>{book.title}</p>
+											<p>{book.count} x {book.price}₼</p>
+										</div>
+									</div>
+									<div className='max-s:h-[200px] p-2 bg-[#f6f6f8] flex justify-between items-center '>
+										<Link>
+											<button className='bg-[#1e1e1e] text-white rounded-3xl px-4 py-2'>
+												Alış-verişə davam et
+											</button>
+										</Link>
+										<Link to={'/basket'}>
+											<button className='rounded-3xl border border-text s:bg-[#000] px-[15px] py-2 text-text s:text-white text-[16px]'>
+												Səbət
+											</button>
+										</Link>
+									</div>
 								</div>
 							</div>
+						)}
+					</div>
+					<div className='flex justify-between items-center'>
+						<div onClick={() => addLike(book)} className='text-[#767676] flex gap-2 items-center cursor-pointer hover:text-red'>
+							{(wishList.some(el => el.id === book.id) ?
+							(<FaHeart className='text-[24px] text-red' /> ):
+							(<FaRegHeart className='text-[24px] text-red' />) 
+							)}
+							<p className='text-[14px] font-extralight '>Seçilmiş</p>
 						</div>
 						<div className='flex items-center text-[#767676] gap-1 cursor-pointer hover:text-red'>
 							<MdOutlineAnnouncement className='text-[24px]' />
@@ -131,7 +183,7 @@ function Detail() {
 					<p onClick={() => setActiveDiv("xususi")} className={`${activeDiv === 'xususi' ? 'border-b-2 border-red text-black' : ''} hover:text-black cursor-pointer`}>Xüsusiyyəti</p>
 					<p onClick={() => setActiveDiv("reyler")} className={`${activeDiv === 'reyler' ? 'border-b-2 border-red text-black' : ''} hover:text-black cursor-pointer whitespace-nowrap`}>İstifadəçi rəyləri</p>
 				</div>
-				<div className='max-w-[840px] mx-auto'> 
+				<div className='max-w-[840px] mx-auto py-4'> 
 					{activeDiv === "desc" && (
 						<div>
 							<p className="text-[18px] text-text">{book?.description}</p>
