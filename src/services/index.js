@@ -44,6 +44,14 @@ export async function get3Alma() {
         return error
     }
 }
+export async function getAuthors() {
+    try {
+        const res = await instance.get('/getAuthors')
+        return res.data
+    } catch (error) {
+        return error
+    }
+}
 
 export async function getBookById(id) {
     try {
@@ -54,7 +62,7 @@ export async function getBookById(id) {
     }
 }
 
-export async function getBooksByCategoryCode(code, pageNumber, pageCount) {
+export async function getBooksByCategoryCode(code, pageNumber=1, pageCount=16) {
     try {
         const res = await instance.get(`/getBooksByCategoryCode?code=${code}&pageNumber=${pageNumber}&pageCount=${pageCount}`)
         return res.data

@@ -1,38 +1,56 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router'
+import { useParams, useSearchParams } from 'react-router'
 import { getBooksByCategoryCode, getCategory } from '../services'
 import { HiBars3BottomLeft } from "react-icons/hi2";
-import { FaChevronDown, FaChevronUp, FaMinus, FaPlus, FaXmark } from 'react-icons/fa6';
+import { FaChevronDown, FaChevronUp, FaMinus, FaPlus, FaXmark } from 'react-icons/fa6'
+import { TbLoader3 } from "react-icons/tb";
 import Item from '../components/main/Item';
+import PriceRange from '../utility/PriceRange';
+import PagePaginate from '../utility/PagePaginate';
+import axios from 'axios';
+import CategoryPagination from '../utility/PagePaginate';
 
 function Category() {
     const [category, setCategory] = useState({})
     const [catalog, setCatalog] = useState([])
+
     const [openOpt, setOpenOpt] = useState(false)
     const [openNum, setOpenNum] = useState(false)
     const [selectedOpt, setSelectedOpt] = useState("Əvvəlcə ucuz")
-    const [selectedNum, setSelectedNum] = useState(16)
+
     const {firstcat, secondcat, thirdcat} = useParams()
     const code = thirdcat || secondcat || firstcat
-
-    const options = [
-        "Əvvəlcə ucuz",
-        "Əvvəlcə yenilər",
-        "A-dan Z-ə",
-        "Z-dən A-ya",
-        "Əvvəlcə baha",
-        "Əvvəlcə populyar olanlar",
-    ]
+    
+    const options = ["Əvvəlcə ucuz", "Əvvəlcə yenilər", "A-dan Z-ə",
+                     "Z-dən A-ya", "Əvvəlcə baha", "Əvvəlcə populyar olanlar"]
     const numbers = [16, 32, 64, 128]
     
+    const [searchParams, setSearchParams] = useSearchParams()
+    const pageNumberUrl = +searchParams.get('pageNumber') || 1
+    const pageCountUrl = +searchParams.get('pageCount') || 16
+
+    const [pageNumber, setPageNumber] = useState(pageNumberUrl)
+    const [pageCount, setPageCount] = useState(pageCountUrl)
+
+    function handleCount(elem) {
+        setPageCount(elem)
+        setPageNumber(1)
+        setOpenNum(false)
+        setSearchParams({pageNumber: 1, pageCount: elem})
+    }
+
+    // useEffect(() => {
+    //     getBooksByCategoryCode(code, pageNumber, pageCount).then( info => setCategory(info))
+    // }, [code, pageNumber, pageCount])
+
+    // useEffect(() => {
+    //     getCategory().then(info => setCatalog(info.menu))
+    // }, [])
 
     useEffect(() => {
-        getBooksByCategoryCode(code, 1, 16).then( info => setCategory(info))
-    }, [code])
-
-    useEffect(() => {
-        getCategory().then(info => setCatalog(info.menu))
-    }, [])
+        axios.get('https://libdata.vercel.app/getCategories')
+            .then(info => setCatalog(info.data.menu))
+    })
 
     return (
         <div className='max-w-[1240px] mx-auto px-4'>
@@ -117,9 +135,12 @@ function Category() {
                                     <p>Mövcuddur </p>
                                 </div>
                             </div>
-                            <div className='flex items-center justify-between'>
-                                <p className='text-text font-black p-2'>Qiymət</p>
-                                <FaPlus className='text-[#767676] text-[20px] ' />
+                            <div className='flex flex-col'>
+                                <div className='flex items-center justify-between'>
+                                    <p className='text-text font-black p-2'>Qiymət</p>
+                                    <FaPlus className='text-[#767676] text-[20px] ' />
+                                </div>
+                                    <PriceRange />
                             </div>
                         </div>
                     </div>  
@@ -161,7 +182,7 @@ function Category() {
                             <p className='text-[#767676] text-[14px] hidden 2xs:block'>Göstər: </p>
                             <div className='flex items-center gap-1 relative '>
                                 <p onClick={() => setOpenNum(!openNum)} className='text-red text-[14px] cursor-pointer'>
-                                    {selectedNum}
+                                    {pageCount}
                                 </p>
                                 {openNum ? (
                                     <FaChevronUp className='text-[10px] text-red' />
@@ -174,10 +195,10 @@ function Category() {
                                         </div>
                                         <ul className='text-text text-[14px] py-1'>
                                             {numbers
-                                            .filter(el => el !== selectedNum)
+                                            .filter(el => el !== pageCount)
                                             .map((elem, i) => (
                                                 <li key={i}
-                                                onClick={() => {setSelectedNum(elem), setOpenNum(false)}}
+                                                onClick={() => handleCount(elem)}
                                                 className='rounded-2xl hover:bg-[#eee] px-2 py-1 cursor-pointer'>
                                                     {elem} məhsul
                                                 </li>
@@ -189,7 +210,16 @@ function Category() {
                         </div>
                     </div>
                     <div className='py-4'>
-                        <Item type='category' code={code} />
+                        <Item type='category' code={code} pageCount={pageCount} pageNumber={pageNumber} />
+                    </div>
+                    <div className='flex flex-col gap-6 '>
+                        <button className='bg-[#1e1e1e] mx-auto text-white rounded-3xl p-4 leading-4 flex items-center gap-2'>
+                        <TbLoader3 className='text-[20px]' /> Daha 16 məhsulu göstər
+                        </button>
+                        <div className='mx-auto'>
+
+                            <CategoryPagination  />
+                        </div>
                     </div>
                 </div>
             </div>

@@ -6,9 +6,9 @@ function SectionAlma() {
 
     const [books, setBooks] = useState([])
 
-	useEffect(() => {
-        get3Alma().then(info => setBooks(info))
-	}, [])
+	// useEffect(() => {
+    //     get3Alma().then(info => setBooks(info))
+	// }, [])
 
     if(books.length === 0 ) {
         return (

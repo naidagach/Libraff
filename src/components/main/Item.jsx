@@ -4,8 +4,9 @@ import ItemSkeleton from './ItemSkeleton'
 import { FaRegHeart, FaXmark } from 'react-icons/fa6'
 import { Link } from 'react-router'
 import { useWishList } from '../../context/wishListContext'
+import axios from 'axios'
 
-function Item({activeLang, type='bestseller', count, book, code}) {
+function Item({activeLang, type='bestseller', count, book, code, pageCount=16, pageNumber=1}) {
 
 	const [books, setBooks] = useState([])
 	const [activeLike, setActiveLike] = useState(false)
@@ -18,33 +19,38 @@ function Item({activeLang, type='bestseller', count, book, code}) {
 		e.stopPropagation()
 		addLike(item)
 		setActiveLike(true)
-		setClicked({...item, count})
+		setClicked({...item, count: 1})
 		setTimeout(() => setActiveLike(false), 6000)
-		console.log(count);
 	}
 
 	useEffect(() => {
 		if (type === 'bestseller') {
-			getBestsellers().then(info => setBooks(info.books) )
+			axios.get('https://libdata.vercel.app/getBestsellers')
+				.then(info => setBooks(info.data.books))
+			// getBestsellers().then(info => setBooks(info.books) )
 		} else if (type === 'mostSearched') {
-			getMostSearched().then(info => setBooks(info.books) )
+			axios.get('https://libdata.vercel.app/mostSearchedBooks')
+				.then(info => setBooks(info.data.books))
+			// getMostSearched().then(info => setBooks(info.books) )
 		} else if (type === 'weekMostViewed') {
-			getWeekMostViewed().then(info => setBooks(info.books) )
+			axios.get('https://libdata.vercel.app/thisWeekMostViewedBooks')
+				.then(info => setBooks(info.data.books))
+			// getWeekMostViewed().then(info => setBooks(info.books) )
 		} else if (type === 'teasPress') {
-			getBestsellers().then(info => {
-				const filterPublisher = info.books.filter(elem => elem.publisher === 'Teas Press').slice(0, count)
+			axios.get('https://libdata.vercel.app/getBestsellers').then(info => {
+				const filterPublisher = info.data.books.filter(elem => elem.publisher === 'Teas Press').slice(0, count)
 				setBooks(filterPublisher)
 			})
 		} else if (type === 'similar') {
-			getBestsellers().then(info => {
-				const similarBooks = info.books.filter(elem => elem.id !== book.id && (
+			axios.get('https://libdata.vercel.app/getBestsellers').then(info => {
+				const similarBooks = info.data.books.filter(elem => elem.id !== book.id && (
 					elem?.secondCategory?.categoryCode === book?.secondCategory?.categoryCode
 				)).slice(0, 12)
 				setBooks(similarBooks)
 			})
 		} else if (type === 'complect') {
-			getBestsellers().then(info => {
-				const complectBooks = info.books.filter(elem => elem.id !== book.id && (
+			axios.get('https://libdata.vercel.app/getBestsellers').then(info => {
+				const complectBooks = info.data.books.filter(elem => elem.id !== book.id && (
 					elem?.thirdCategory?.categoryCode === book?.thirdCategory?.categoryCode
 				)).slice(0, 15)
 				setBooks(complectBooks)
@@ -58,10 +64,35 @@ function Item({activeLang, type='bestseller', count, book, code}) {
 					return []
 				}
 			})
-		} else if (type === 'category') {
-			getBooksByCategoryCode(code, 1, 16).then(info => setBooks(info.books))
+		} 
+		// else if (type === 'category') {
+		// 	getBooksByCategoryCode(code, pageNumber, pageCount).then(info => setBooks(info.books))
+		// }
+	}, [type, count, code, pageNumber, pageCount])
+
+	// useEffect(() => {
+	// 	if (type === 'recent') {
+	// 		setBooks(() => {
+	// 			try {
+	// 				const data = JSON.parse(localStorage.getItem('viewedBooks'))
+	// 				return Array.isArray(data) ? data : []
+	// 			} catch (error) {
+	// 				return []
+	// 			}
+	// 		})
+	// 	}
+	// }, [])
+
+	useEffect(() => {
+		if (activeLike) {
+		  	document.body.style.overflow = "hidden"
+			} else {
+		  		document.body.style.overflow = "auto"
+			}
+			return () => {
+		  		document.body.style.overflow = "auto"
 		}
-	}, [code])
+	  }, [activeLike])
 
 	const lang = {
 		'Azərbaycan': 'AZE',

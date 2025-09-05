@@ -6,7 +6,7 @@ import MainSwiper from './MainSwiper'
 function Main() {
     const lang = ['Azərbaycan', 'Rusca', 'Türkcə']
     const [activeLang, setActiveLang] = useState(0)
-    const [count, setCount] = useState(3)
+    const [count, setCount] = useState(5)
 
 
     return (
@@ -47,7 +47,7 @@ function Main() {
                         <Item count={count} type='teasPress' />
                     </div>
                     <div className='text-center'>
-                        <button  className='text-text rounded-3xl border-2 cursor-pointer border-red px-[15px] py-2 my-4'>Daha çox göstər</button>
+                        <button onClick={() => {console.log(count) ,setCount(prev => prev + 5)}} className='text-text rounded-3xl border-2 cursor-pointer border-red px-[15px] py-2 my-4'>Daha çox göstər</button>
                     </div>
                 </section>
                 <section className='py-[30px]'>

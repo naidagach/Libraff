@@ -3,16 +3,21 @@ import { getCategory } from '../../services'
 import { FaChevronRight } from "react-icons/fa6";
 import CatalogSkeleton from './CatalogSkeleton';
 import { Link } from 'react-router';
+import axios from 'axios';
 
 function CatalogModal({setOpenCat}) {
     const [category, setCategory] = useState([])
     const [active, setActive] = useState(0)
     const [subActive, setSubActive] = useState(0)
 
-    useEffect(() => {
-        getCategory().then(info => setCategory(info.menu))
-    }, [])
+    // useEffect(() => {
+    //     getCategory().then(info => setCategory(info.menu))
+    // }, [])
 
+    useEffect(() => {
+        axios.get('https://libdata.vercel.app/getCategories')
+            .then(info => setCategory(info.data.menu))
+    })
     if (category.length === 0) {
         return (
             <div className="fixed inset-0 top-[16%] bg-white h-[75%] mx-auto rounded-2xl p-6 flex justify-between w-[100%] gap-4">

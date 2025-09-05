@@ -29,15 +29,15 @@ function Header() {
                 </div>
                 <div className='flex gap-4 justify-between'>
                     <div className='flex gap-4 '>
-                        <div onClick={() => setOpenCat(!openCat)} className='bg-red hover:bg-[#ef1522] cursor-pointer px-[15px] py-[10px] rounded-[22px] flex gap-2 l:px-6 z-[999]'>
+                        <div onClick={() => setOpenCat(!openCat)} className='relative bg-red hover:bg-[#ef1522] cursor-pointer px-[15px] py-[10px] rounded-[22px] flex gap-2 l:px-6 z-[999]'>
                             {!openCat ? 
                             <TbLayoutGrid className='w-[24px] h-[24px] text-white' /> : <FaXmark className="w-[24px] h-[24px] text-white" /> }
-                            
                             <p  className='hidden l:block text-white'>Kataloq</p>
+                            {openCat && 
+                            <GoTriangleUp className='text-white z-[999] absolute top-[100%] right-2 text-[40px]' />}
                         </div>
                         {openCat &&
                             <div onClick={() => setOpenCat(false)} className='bg-[#00000094] fixed inset-0 z-[99] scale-100 transform transition-all ease-out duration-300'>
-                                <GoTriangleUp className='text-white z-[999] absolute top-[75px] left-[250px] text-[40px]' />
                                 <CatalogModal setOpenCat={setOpenCat}/>
                             </div>
                         }
@@ -99,7 +99,7 @@ function Header() {
                                 <div>
                                     <img className='w-[20px] absolute top-[100%] right-[75px] ' src=" " alt="" />
                                 </div>
-                                <div className='bg-[#000000c9] text-white text-[14px] absolute right-[60px] p-2 m-2 top-[100%] w-[200px] rounded-md'>
+                                <div className='bg-[#000000c9] text-white text-[14px] absolute right-0 p-2 m-2 top-[100%] w-[200px] rounded-md'>
                                     <p>Seçilmiş məhsulların siyahısına baxın</p>
                                 </div>
                             </div>
@@ -164,10 +164,10 @@ function Header() {
             </div>
             <div className='p-4 flex justify-between max-w-[1240px] mx-auto border-b border-[#ccc]'>
                 <ul className='flex gap-4 text-[15px] font-bold'>
-                    <li>Bestseller – İyun</li>
-                    <li>Endirimlər</li>
-                    <li>Müəlliflər</li>
-                    <li>Klassiklər</li>
+                    <Link to={'/bestsellers'}>Bestseller – Avqust</Link>
+                    <Link >Endirimlər</Link>
+                    <Link to={'authors'}>Müəlliflər</Link>
+                    <Link >Klassiklər</Link>
                 </ul>
                 <ul className='flex gap-4 text-[15px] text-[#334155] font-extralight'>
                     <li>Ödəniş və çatdırılma</li>

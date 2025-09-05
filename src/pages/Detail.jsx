@@ -21,9 +21,9 @@ function Detail() {
 	const {wishList, addLike} = useWishList()
 	const {basket, addToBasket} = useBasket()
 	
-	useEffect(() => {
-		getBookById(id).then(info => setBook(info))
-	}, [id, name])
+	// useEffect(() => {
+	// 	getBookById(id).then(info => setBook(info))
+	// }, [id, name])
 
 	useEffect(() => {
 		if (book && book.id) {
@@ -41,6 +41,18 @@ function Detail() {
 
 		}
 	}, [book])
+
+	useEffect(() => {
+		if (activeItem) {
+
+			document.body.style.overflow = "hidden"
+			} else {
+				document.body.style.overflow = "auto"
+				}
+				return () => {
+					document.body.style.overflow = "auto"
+					}
+	}, [activeItem])
 
 	function handleBasket(item) {
 		addToBasket(item)
@@ -117,10 +129,10 @@ function Detail() {
 						) : ''}
 						{activeItem && (
 							<div className='bg-[#00000080] inset-0 z-[999] fixed  flex items-center justify-center w-screen'>
-								<div onClick={e => e.preventDefault()} className='max-s:fixed z-[999] max-s:bottom-0 s:inset-0 s:w-[500px] mx-auto  s:rounded-2xl s:overflow-hidden left-0 right-0 bg-white'>
+								<div className='max-s:fixed z-[999] max-s:bottom-0 s:inset-0 s:w-[500px] mx-auto  s:rounded-2xl s:overflow-hidden left-0 right-0 bg-white'>
 									<div className='flex justify-between items-center px-[15px] py-[10px] border-b border-[#eee]'>
 										<h1 className='text-[22px] text-text'>Məhsul səbətə əlavə edilmişdir</h1>
-										<FaXmark onClick={() => setActiveItem(!activeItem)} className='cursor-pointer text-[22px]' />
+										<FaXmark onClick={() => setActiveItem(false)} className='cursor-pointer text-[22px]' />
 									</div>
 									<div className='s:flex s:justify-between p-4' key={book.id}>
 										<img className='w-[80px] py-2 max-s:mx-auto' src={book.imageSource} alt={book.title} />
